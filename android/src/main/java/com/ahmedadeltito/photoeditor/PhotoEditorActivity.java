@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
@@ -32,9 +33,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -46,6 +51,7 @@ import android.widget.Toast;
 import android.view.WindowManager;
 
 import com.ahmedadeltito.photoeditor.widget.SlidingUpPanelLayout;
+import com.ahmedadeltito.photoeditor.widget.ZoomableRelativeLayout;
 import com.ahmedadeltito.photoeditorsdk.BrushDrawingView;
 import com.ahmedadeltito.photoeditorsdk.OnPhotoEditorSDKListener;
 import com.ahmedadeltito.photoeditorsdk.PhotoEditorSDK;
@@ -77,6 +83,7 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
     final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
     private final String TAG = "PhotoEditorActivity";
+    //     private ZoomableRelativeLayout SuperImageRelativeLayout;
     private RelativeLayout parentImageRelativeLayout;
     private RecyclerView drawingViewColorPickerRecyclerView;
     private TextView undoTextView, undoTextTextView, doneDrawingTextView, eraseDrawingTextView;
@@ -95,9 +102,35 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
     private boolean cropperCircleOverlay = false;
     private boolean freeStyleCropEnabled = false;
     private boolean showCropGuidelines = true;
-    private boolean hideBottomControls = false;
+    private boolean hideBottomControls = true;
 
     private ImageView photoEditImageView;
+
+//     private class OnPinchListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+
+//         float startingSpan;
+//         float endSpan;
+//         float startFocusX;
+//         float startFocusY;
+
+
+//         public boolean onScaleBegin(ScaleGestureDetector detector) {
+//             startingSpan = detector.getCurrentSpan();
+//             startFocusX = detector.getFocusX();
+//             startFocusY = detector.getFocusY();
+//             return true;
+//         }
+
+
+//         public boolean onScale(ScaleGestureDetector detector) {
+//             SuperImageRelativeLayout.scale(detector.getCurrentSpan()/startingSpan, startFocusX, startFocusY);
+//             return true;
+//         }
+
+//         public void onScaleEnd(ScaleGestureDetector detector) {
+// //            parentImageRelativeLayout.restore();
+//         }
+//     }
 
 
     @Override
@@ -107,7 +140,7 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        selectedImagePath = getIntent().getExtras().getString("selectedImagePath");	
+        selectedImagePath = getIntent().getExtras().getString("selectedImagePath");
         if (selectedImagePath.contains("content://")) {
             selectedImagePath = getPath(Uri.parse(selectedImagePath));
         }
@@ -129,7 +162,6 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
             e.printStackTrace();
         }
 
-
         Typeface newFont = getFontFromRes(R.raw.eventtusicons);
         Typeface fontAwesome = getFontFromRes(R.raw.font_awesome_solid);
 
@@ -138,6 +170,7 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
         BrushDrawingView brushDrawingView = (BrushDrawingView) findViewById(R.id.drawing_view);
         drawingViewColorPickerRecyclerView = (RecyclerView) findViewById(R.id.drawing_view_color_picker_recycler_view);
         parentImageRelativeLayout = (RelativeLayout) findViewById(R.id.parent_image_rl);
+//         SuperImageRelativeLayout = (ZoomableRelativeLayout) findViewById(R.id.super_image_rl);
         TextView closeTextView = (TextView) findViewById(R.id.close_tv);
         TextView addTextView = (TextView) findViewById(R.id.add_text_tv);
         TextView addPencil = (TextView) findViewById(R.id.add_pencil_tv);
@@ -166,16 +199,22 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
 
         photoEditImageView.setImageBitmap(rotatedBitmap);
 
+
+//         final ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(this, new OnPinchListener());
+
+//         SuperImageRelativeLayout.setOnTouchListener(new View.OnTouchListener() {
+
+//             @Override
+//             public boolean onTouch(View v, MotionEvent event) {
+//                 // TODO Auto-generated method stub
+//                 scaleGestureDetector.onTouchEvent(event);
+//                 return true;
+//             }
+//         });
+
+
         closeTextView.setTypeface(newFont);
-        addTextView.setTypeface(newFont);
-        addPencil.setTypeface(newFont);
-        addImageEmojiTextView.setTypeface(newFont);
-        addCropTextView.setTypeface(fontAwesome);
-        saveTextView.setTypeface(newFont);
-        undoTextView.setTypeface(newFont);
-        clearAllTextView.setTypeface(newFont);
-        goToNextTextView.setTypeface(newFont);
-        deleteTextView.setTypeface(newFont);
+
 
         final List<Fragment> fragmentsList = new ArrayList<>();
 
@@ -501,8 +540,8 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
                 String imageName = "/IMG_" + timeStamp + ".jpg";
 
-                 String selectedImagePath = getIntent().getExtras().getString("selectedImagePath");
-                 File file = new File(selectedImagePath);
+                String selectedImagePath = getIntent().getExtras().getString("selectedImagePath");
+                File file = new File(selectedImagePath);
 //                String newPath = getCacheDir() + imageName;
 //	            File file = new File(newPath);
 
@@ -591,7 +630,10 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
         } else if (v.getId() == R.id.add_text_tv) {
             openAddTextPopupWindow("", -1);
         } else if (v.getId() == R.id.add_pencil_tv) {
+
+
             updateBrushDrawingView(true);
+
         } else if (v.getId() == R.id.done_drawing_tv) {
             updateBrushDrawingView(false);
         } else if (v.getId() == R.id.save_tv || v.getId() == R.id.save_text_tv) {
@@ -752,10 +794,12 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
         options.setShowCropGrid(showCropGuidelines);
         options.setHideBottomControls(hideBottomControls);
         options.setAllowedGestures(
-                UCropActivity.ALL, // When 'scale'-tab active
-                UCropActivity.ALL, // When 'rotate'-tab active
-                UCropActivity.ALL  // When 'aspect ratio'-tab active
+                UCropActivity.SCALE, // When 'scale'-tab active
+                UCropActivity.NONE, // When 'rotate'-tab active
+                UCropActivity.SCALE // When 'aspect ratio'-tab active
         );
+
+        options.withAspectRatio(4,3);
 
 
         UCrop uCrop = UCrop
