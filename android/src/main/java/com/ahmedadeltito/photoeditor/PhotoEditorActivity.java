@@ -107,7 +107,7 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        selectedImagePath = getIntent().getExtras().getString("selectedImagePath");	
+        selectedImagePath = getIntent().getExtras().getString("selectedImagePath");
         if (selectedImagePath.contains("content://")) {
             selectedImagePath = getPath(Uri.parse(selectedImagePath));
         }
@@ -501,8 +501,8 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
                 String imageName = "/IMG_" + timeStamp + ".jpg";
 
-                 String selectedImagePath = getIntent().getExtras().getString("selectedImagePath");
-                 File file = new File(selectedImagePath);
+                String selectedImagePath = getIntent().getExtras().getString("selectedImagePath");
+                File file = new File(selectedImagePath);
 //                String newPath = getCacheDir() + imageName;
 //	            File file = new File(newPath);
 
