@@ -6,7 +6,7 @@
     <string name="clear_all">Clear All</string>
     <string name="camera">Camera</string>
     <string name="draw">Markup</string>
-    <string name="crop">Crop</string>
+    <string name="photo_crop">Crop</string>
     <string name="gallery">Gallery</string>
     <string name="upload_dialog_title">Upload Image</string>
     <string name="upload_picker_title">Select Picture</string>
