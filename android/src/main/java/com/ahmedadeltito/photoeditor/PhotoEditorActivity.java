@@ -167,15 +167,6 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
         photoEditImageView.setImageBitmap(rotatedBitmap);
 
         closeTextView.setTypeface(newFont);
-        addTextView.setTypeface(newFont);
-        addPencil.setTypeface(newFont);
-        addImageEmojiTextView.setTypeface(newFont);
-        addCropTextView.setTypeface(fontAwesome);
-        saveTextView.setTypeface(newFont);
-        undoTextView.setTypeface(newFont);
-        clearAllTextView.setTypeface(newFont);
-        goToNextTextView.setTypeface(newFont);
-        deleteTextView.setTypeface(newFont);
 
         final List<Fragment> fragmentsList = new ArrayList<>();
 
