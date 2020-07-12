@@ -752,12 +752,11 @@ public class PhotoEditorActivity extends AppCompatActivity implements View.OnCli
         options.setShowCropGrid(showCropGuidelines);
         options.setHideBottomControls(hideBottomControls);
         options.setAllowedGestures(
-                UCropActivity.ALL, // When 'scale'-tab active
-                UCropActivity.ALL, // When 'rotate'-tab active
-                UCropActivity.ALL  // When 'aspect ratio'-tab active
+                UCropActivity.SCALE, // When 'scale'-tab active
+                UCropActivity.NONE, // When 'rotate'-tab active
+                UCropActivity.SCALE // When 'aspect ratio'-tab active
         );
-
-
+        options.withAspectRatio(4,3);
         UCrop uCrop = UCrop
                 .of(uri, Uri.fromFile(new File(this.getTmpDir(this), UUID.randomUUID().toString() + ".jpg")))
                 .withOptions(options);
